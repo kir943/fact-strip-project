@@ -86,24 +86,28 @@ def detect_mood(statement):
 
 
 def generate_comic(story, style, verdict, confidence, statement):
-    """Generate a complete 4-panel comic with separate images"""
+    """Generate a single comic image with 4 panels"""
     try:
         # Split into 4 panels with actual dialogue
         panels = story_processor.split_into_panels(statement, verdict, confidence, story)
         print(f"📝 Generated panel dialogues: {panels}")
         
-        # Generate 4 separate panel images
+        # Generate single comic image with 4 panels
         panel_images = comic_generator.generate_comic_panels(style, panels, statement)
         
-        # Return all 4 panel images
-        return panel_images
+        # Return the single comic image (first element in array)
+        return panel_images[0] if panel_images else None
         
     except Exception as e:
         print(f"❌ Comic generation error: {e}")
         traceback.print_exc()
-        # Fallback - return 4 fallback panels
-        panels = story_processor.split_into_panels(statement, verdict, confidence, story)
-        return [comic_generator._create_fallback_panel(panel, style, i) for i, panel in enumerate(panels)]
+        # Fallback - create single fallback image
+        try:
+            fallback_image = comic_generator._create_fallback_panel_image("Comic generation failed", style, 0)
+            fallback_base64 = comic_generator.image_to_base64(fallback_image)
+            return f"data:image/png;base64,{fallback_base64}"
+        except:
+            return None
 
 
 # --- API Routes ---
@@ -113,7 +117,7 @@ def home():
         "message": "Fact-Strip Backend API",
         "status": "running",
         "endpoints": {
-            "POST /api/generate": "Check facts and generate 4-panel comics",
+            "POST /api/generate": "Check facts and generate comics",
             "GET /health": "Health check"
         }
     })
@@ -153,8 +157,8 @@ def generate():
         mood, mood_confidence = detect_mood(statement)
         print(f"🎭 Mood: {mood} ({mood_confidence}%)")
 
-        # Generate comic - NOW RETURNS 4 PANEL IMAGES
-        panel_images = generate_comic(
+        # Generate comic - NOW RETURNS SINGLE IMAGE
+        comic_image = generate_comic(
             result["story"],
             style,
             result["verdict"],
@@ -162,25 +166,14 @@ def generate():
             statement
         )
 
-        # Prepare panels text (for reference)
-        panels = story_processor.split_into_panels(
-            statement, 
-            result["verdict"], 
-            result["confidence"], 
-            result["story"]
-        )
-
+        # Prepare response data matching frontend expectations
         response_data = {
             "verdict": result["verdict"],
             "confidence": result["confidence"],
             "description": result["description"],
-            "story": result["story"],
             "mood": mood,
-            "mood_confidence": mood_confidence,
-            "panel_images": panel_images,  # CHANGED: Now returns 4 images
-            "panels": panels,
-            "original_statement": statement,
-            "style": style,
+            "moodConfidence": mood_confidence,  # Changed to match frontend
+            "comicImage": comic_image,  # Single image for frontend
             "success": True
         }
 

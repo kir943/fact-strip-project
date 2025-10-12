@@ -24,33 +24,68 @@ export const FactProvider = ({ children }) => {
   useEffect(() => {
     const savedHistory = localStorage.getItem('factStripHistory');
     if (savedHistory) {
-      const parsedHistory = JSON.parse(savedHistory);
-      setHistory(parsedHistory);
-      updateAnalytics(parsedHistory);
+      try {
+        const parsedHistory = JSON.parse(savedHistory);
+        setHistory(parsedHistory);
+        updateAnalytics(parsedHistory);
+      } catch (error) {
+        console.error('Error parsing saved history:', error);
+        // Clear corrupted data
+        localStorage.removeItem('factStripHistory');
+      }
     }
   }, []);
 
   const updateAnalytics = (historyData) => {
     const analytics = {
       totalChecks: historyData.length,
-      trueCount: historyData.filter(item => item.verdict === 'true').length,
-      falseCount: historyData.filter(item => item.verdict === 'false').length,
-      unverifiedCount: historyData.filter(item => item.verdict === 'unverified').length
+      trueCount: historyData.filter(item => item.verdict?.toLowerCase() === 'true').length,
+      falseCount: historyData.filter(item => item.verdict?.toLowerCase() === 'false').length,
+      unverifiedCount: historyData.filter(item => 
+        !item.verdict || 
+        item.verdict?.toLowerCase() === 'unverified' || 
+        !['true', 'false'].includes(item.verdict?.toLowerCase())
+      ).length
     };
     setAnalytics(analytics);
   };
 
   const addToHistory = (result) => {
-    const newHistory = [result, ...history.slice(0, 49)]; // Keep last 50 items
+    // Create a clean history item with only necessary data
+    const historyItem = {
+      id: result.id || Date.now(),
+      timestamp: result.timestamp || new Date().toISOString(),
+      statement: result.statement,
+      verdict: result.verdict,
+      confidence: result.confidence,
+      description: result.description,
+      mood: result.mood,
+      moodConfidence: result.moodConfidence,
+      comicImage: result.comicImage, // Single comic image
+      style: result.style
+    };
+
+    const newHistory = [historyItem, ...history.slice(0, 49)]; // Keep last 50 items
     setHistory(newHistory);
-    localStorage.setItem('factStripHistory', JSON.stringify(newHistory));
+    
+    try {
+      localStorage.setItem('factStripHistory', JSON.stringify(newHistory));
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
+    
     updateAnalytics(newHistory);
   };
 
   const clearHistory = () => {
     setHistory([]);
     setAnalytics({ totalChecks: 0, trueCount: 0, falseCount: 0, unverifiedCount: 0 });
-    localStorage.removeItem('factStripHistory');
+    
+    try {
+      localStorage.removeItem('factStripHistory');
+    } catch (error) {
+      console.error('Error clearing localStorage:', error);
+    }
   };
 
   const value = {

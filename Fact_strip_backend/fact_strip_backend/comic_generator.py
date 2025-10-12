@@ -12,37 +12,74 @@ class ComicGenerator:
         self.comic_width = 800    # 800 ÷ 8 = 100 ✓ (2 panels wide)
         self.comic_height = 800   # 800 ÷ 8 = 100 ✓ (2 panels high)
     
-    def generate_single_comic_image(self, style, panels, statement):
-        """Generate ONE single image with 4 panels arranged in 2x2 grid"""
+    def generate_comic_panels(self, style, panels, statement):
+        """Generate ONE single image with 4 panels arranged in 2x2 grid - compatible with backend"""
         print(f"🎨 Generating single comic image with 4 panels...")
         
-        # Generate each panel individually
-        panel_images = []
-        for i, panel_text in enumerate(panels):
-            prompt = self._create_panel_prompt(panel_text, style, i, statement)
-            print(f"  Generating Panel {i+1}...")
-            
-            image_url = self._generate_single_panel(prompt, style)
-            if image_url:
-                try:
-                    response = requests.get(image_url)
-                    if response.status_code == 200:
-                        image = Image.open(BytesIO(response.content))
-                        image_with_bubble = self._add_speech_bubble_to_panel(image, panel_text)
-                        panel_images.append(image_with_bubble)
-                    else:
+        try:
+            # Generate each panel individually
+            panel_images = []
+            for i, panel_text in enumerate(panels):
+                prompt = self._create_panel_prompt(panel_text, style, i, statement)
+                print(f"  Generating Panel {i+1}...")
+                
+                image_url = self._generate_single_panel(prompt, style)
+                if image_url:
+                    try:
+                        response = requests.get(image_url)
+                        if response.status_code == 200:
+                            image = Image.open(BytesIO(response.content))
+                            image_with_bubble = self._add_speech_bubble_to_panel(image, panel_text)
+                            panel_images.append(image_with_bubble)
+                        else:
+                            panel_images.append(self._create_fallback_panel_image(panel_text, style, i))
+                    except:
                         panel_images.append(self._create_fallback_panel_image(panel_text, style, i))
-                except:
+                else:
                     panel_images.append(self._create_fallback_panel_image(panel_text, style, i))
-            else:
-                panel_images.append(self._create_fallback_panel_image(panel_text, style, i))
+            
+            # Create the final single comic image with 2x2 grid
+            final_comic = self._create_2x2_comic_layout(panel_images)
+            
+            # Convert to base64 for web display
+            comic_base64 = self.image_to_base64(final_comic)
+            
+            # Return as array with single element to match backend expectation
+            return [f"data:image/png;base64,{comic_base64}"]
+            
+        except Exception as e:
+            print(f"❌ Comic generation failed: {e}")
+            # Return fallback as array
+            fallback = self._create_fallback_panel_image("Comic generation failed", style, 0)
+            fallback_base64 = self.image_to_base64(fallback)
+            return [f"data:image/png;base64,{fallback_base64}"]
+    
+    def _create_fallback_panel_image(self, panel_text, style, panel_index):
+        """Create fallback panel as PIL Image (not base64)"""
+        image = Image.new('RGB', (self.panel_width, self.panel_height), color=(240, 240, 240))
+        draw = ImageDraw.Draw(image)
         
-        # Create the final single comic image with 2x2 grid
-        final_comic = self._create_2x2_comic_layout(panel_images)
+        # Style-based background color
+        bg_colors = {
+            'anime/manga': (255, 240, 245),
+            'newspaper': (220, 220, 220),
+            'normal': (235, 245, 255)
+        }
         
-        # Convert to base64 for web display
-        comic_base64 = self.image_to_base64(final_comic)
-        return f"data:image/png;base64,{comic_base64}"
+        bg_color = bg_colors.get(style, (240, 240, 240))
+        draw.rectangle([0, 0, self.panel_width, self.panel_height], fill=bg_color)
+        
+        # Add panel border
+        draw.rectangle([5, 5, self.panel_width-5, self.panel_height-5], outline="black", width=2)
+        
+        # Add panel number
+        font_large = self._load_best_font(20)
+        draw.text((self.panel_width//2 - 30, 20), f"Panel {panel_index + 1}", fill="black", font=font_large)
+        
+        # Add speech bubble with text
+        image_with_bubble = self._add_speech_bubble_to_panel(image, panel_text)
+        
+        return image_with_bubble
 
     def _create_2x2_comic_layout(self, panel_images):
         """Combine 4 panels into one 2x2 grid image"""
@@ -74,39 +111,12 @@ class ComicGenerator:
         
         return comic
 
-    def _create_fallback_panel_image(self, panel_text, style, panel_index):
-        """Create fallback panel as PIL Image (not base64)"""
-        image = Image.new('RGB', (self.panel_width, self.panel_height), color=(240, 240, 240))
-        draw = ImageDraw.Draw(image)
-        
-        # Style-based background color
-        bg_colors = {
-            'anime': (255, 240, 245),
-            'newspaper': (220, 220, 220),
-            'normal': (235, 245, 255)
-        }
-        
-        bg_color = bg_colors.get(style, (240, 240, 240))
-        draw.rectangle([0, 0, self.panel_width, self.panel_height], fill=bg_color)
-        
-        # Add panel border
-        draw.rectangle([5, 5, self.panel_width-5, self.panel_height-5], outline="black", width=2)
-        
-        # Add panel number
-        font_large = self._load_best_font(20)
-        draw.text((self.panel_width//2 - 30, 20), f"Panel {panel_index + 1}", fill="black", font=font_large)
-        
-        # Add speech bubble with text
-        image_with_bubble = self._add_speech_bubble_to_panel(image, panel_text)
-        
-        return image_with_bubble
-
     def _create_panel_prompt(self, panel_text, style, panel_index, statement):
         """Create style-specific prompt for a single panel"""
         
         # Style-specific base prompts
         style_bases = {
-            'anime': "Japanese anime manga style, vibrant colors, expressive anime characters, clean line art, detailed background",
+            'anime/manga': "Japanese anime manga style, vibrant colors, expressive anime characters, clean line art, detailed background",
             'newspaper': "Black and white newspaper comic style, vintage comic strip, grayscale, classic comic art, ink drawing",
             'normal': "Realistic educational comic style, diverse characters explaining, clear visual storytelling, professional comic art"
         }
@@ -162,7 +172,7 @@ class ComicGenerator:
             if style == "newspaper":
                 input_params["prompt"] += ", black and white, grayscale, newspaper comic style, ink drawing"
                 input_params["negative_prompt"] = "color, colorful"
-            elif style == "anime":
+            elif style == "anime/manga":
                 input_params["prompt"] += ", anime style, manga, Japanese animation, vibrant colors"
             else:  # normal style
                 input_params["prompt"] += ", educational comic style, clear illustration, professional artwork"

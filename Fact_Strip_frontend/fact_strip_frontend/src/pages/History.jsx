@@ -25,7 +25,8 @@ const History = () => {
     }
   };
 
-  if (history.length === 0) {
+  // Add safety check for history
+  if (!history || history.length === 0) {
     return (
       <div className="history-page">
         <div className="page-header">
@@ -140,58 +141,61 @@ const History = () => {
                     style={{ backgroundColor: getVerdictColor(item.verdict) }}
                   >
                     {getVerdictIcon(item.verdict)}
-                    <span>{item.verdict.toUpperCase()}</span>
+                    <span>{item.verdict?.toUpperCase() || 'UNVERIFIED'}</span>
                   </div>
                   <div className="confidence-indicator">
                     <div 
                       className="confidence-bar"
                       style={{ 
-                        width: `${item.confidence}%`,
+                        width: `${item.confidence || 0}%`,
                         backgroundColor: getVerdictColor(item.verdict)
                       }}
                     />
-                    <span>{item.confidence}% confidence</span>
+                    <span>{item.confidence || 0}% confidence</span>
                   </div>
                 </div>
                 <div className="history-date">
                   <Calendar className="w-4 h-4" />
-                  {new Date(item.timestamp).toLocaleDateString('en-US', {
+                  {item.timestamp ? new Date(item.timestamp).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit'
-                  })}
+                  }) : 'Unknown date'}
                 </div>
               </div>
               
               <div className="history-content">
                 <div className="history-statement">
-                  "{item.statement}"
+                  "{item.statement || 'No statement available'}"
                 </div>
                 
                 <div className="history-details-grid">
                   <div className="detail-item">
                     <span className="detail-label">Mood Analysis:</span>
                     <span className="detail-value">
-                      {item.mood} ({item.mood_confidence}%)
+                      {item.mood || 'neutral'} ({item.moodConfidence || 0}%)
                     </span>
                   </div>
                   <div className="detail-item">
                     <span className="detail-label">Writing Style:</span>
-                    <span className="detail-value">{item.style}</span>
+                    <span className="detail-value">{item.style || 'normal'}</span>
                   </div>
                   <div className="detail-item">
                     <span className="detail-label">Fact Check ID:</span>
-                    <span className="detail-value monospace">{item.id.slice(0, 8)}...</span>
+                    <span className="detail-value monospace">
+                      {/* FIXED: Convert id to string before using slice */}
+                      {String(item.id || '').slice(0, 8)}...
+                    </span>
                   </div>
                 </div>
 
-                {item.comic_url && (
+                {item.comicImage && (
                   <div className="history-comic">
                     <div className="comic-label">Generated Comic Strip</div>
                     <img 
-                      src={item.comic_url} 
+                      src={item.comicImage} 
                       alt="Generated comic" 
                       className="comic-thumbnail" 
                     />
