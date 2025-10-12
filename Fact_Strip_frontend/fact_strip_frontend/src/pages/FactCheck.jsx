@@ -350,7 +350,7 @@ const FactCheck = () => {
                       </motion.div>
                     </div>
 
-                    {/* Visual Fact-Strip - UPDATED FOR 4 PANELS */}
+                    {/* Visual Fact-Strip - SINGLE COMIC IMAGE (4 panels inside it) */}
                     <motion.section 
                       className="comic-section"
                       initial={{ opacity: 0, y: 40 }}
@@ -361,29 +361,30 @@ const FactCheck = () => {
                         <ImageIcon className="w-6 h-6" />
                         <h3>Visual Fact-Strip</h3>
                       </div>
-                      <div className="comic-display">
-                        <div className="comic-strip">
-                          {result.panel_images && result.panel_images.map((image, index) => (
-                            <motion.div
-                              key={index}
-                              className="comic-panel"
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ duration: 0.5, delay: 0.5 + (index * 0.1) }}
-                            >
-                              <img 
-                                src={image} 
-                                alt={`Comic Panel ${index + 1}`} 
-                                className="panel-image"
-                              />
-                              <div className="panel-number">Panel {index + 1}</div>
-                            </motion.div>
-                          ))}
-                        </div>
-                        <div className="comic-overlay">
-                          <span className="comic-style">{selectedStyle} Style</span>
-                          <span className="comic-ai">AI Generated</span>
-                        </div>
+
+                      <div className="comic-display single-image">
+                        {result.comicImage ? (
+                          <motion.div
+                            className="comic-panel"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.6 }}
+                          >
+                            <img 
+                              src={result.comicImage}
+                              alt="Generated Comic"
+                              className="panel-image single"
+                            />
+                            <div className="comic-overlay">
+                              <span className="comic-style">{selectedStyle} Style</span>
+                              <span className="comic-ai">AI Generated</span>
+                            </div>
+                          </motion.div>
+                        ) : (
+                          <div className="no-image-placeholder">
+                            <p>Comic not generated yet</p>
+                          </div>
+                        )}
                       </div>
                     </motion.section>
                   </motion.div>
