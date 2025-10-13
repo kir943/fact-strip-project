@@ -39,14 +39,19 @@ const About = () => {
   ];
 
   const technologies = [
-    { name: "React", description: "Modern frontend framework" },
-    { name: "Node.js", description: "Backend runtime environment" },
-    { name: "AI/ML APIs", description: "Advanced fact-checking algorithms" },
-    { name: "Computer Vision", description: "Image analysis and generation" },
-    { name: "Natural Language Processing", description: "Text understanding and mood detection" },
-    { name: "Python", description: "Data processing and AI models" }
-  ];
-
+    { name: "React", description: "Component-based frontend with hooks" },
+    { name: "Flask", description: "Python backend with RESTful endpoints" },
+    { name: "OpenAI API", description: "GPT models for analysis and explanations" },
+    { name: "Replicate", description: "Stable Diffusion for comic generation" },
+    { name: "Framer Motion", description: "Smooth UI animations" },
+    { name: "Context API", description: "Global state management" },
+    { name: "Local Storage", description: "Browser-based data persistence" },
+    { name: "CSS Grid/Flexbox", description: "Modern responsive layouts" },
+    { name: "REST Architecture", description: "Clean API design" },
+    { name: "JSON Processing", description: "Structured data handling" },
+    { name: "Prompt Engineering", description: "Optimized AI instructions" },
+    { name: "Image Processing", description: "Base64 and PIL manipulation" }
+];
   return (
     <div className="about-page">
       {/* Hero Section */}
