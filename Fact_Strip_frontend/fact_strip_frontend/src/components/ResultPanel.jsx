@@ -8,10 +8,11 @@ const ResultPanel = ({ result }) => {
     verdict,
     confidence,
     mood,
-    mood_confidence,
+    moodConfidence, // Fixed: was mood_confidence
     description,
-    panel_images, // CHANGED: Now using panel_images instead of comic_url
-    sources = []
+    comicImage, // CHANGED: Now using comicImage (single image) instead of panel_images
+    explanation, // NEW: Scientific explanations
+    style
   } = result;
 
   const getVerdictConfig = (verdict) => {
@@ -63,11 +64,11 @@ const ResultPanel = ({ result }) => {
   };
 
   const handleDownload = () => {
-    // Download first panel as example (you can enhance this to download all panels)
-    if (panel_images && panel_images.length > 0) {
+    // Download the comic image
+    if (comicImage) {
       const link = document.createElement('a');
-      link.href = panel_images[0];
-      link.download = `fact-strip-panel-${Date.now()}.png`;
+      link.href = comicImage;
+      link.download = `fact-strip-${Date.now()}.png`;
       link.click();
     }
   };
@@ -113,7 +114,7 @@ const ResultPanel = ({ result }) => {
               <Share2 className="w-4 h-4" />
               Share
             </motion.button>
-            {panel_images && panel_images.length > 0 && (
+            {comicImage && (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -128,12 +129,45 @@ const ResultPanel = ({ result }) => {
         </div>
       </motion.div>
 
+      {/* Scientific Explanation Section - NEW */}
+      {explanation && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="scientific-explanation-section"
+        >
+          <div className="info-title">
+            <i className="fas fa-microscope"></i>
+            Scientific Explanation
+          </div>
+          <div className="explanation-steps">
+            <div className="explanation-step">
+              <div className="step-number">1</div>
+              <div className="step-content">{explanation.step1}</div>
+            </div>
+            <div className="explanation-step">
+              <div className="step-number">2</div>
+              <div className="step-content">{explanation.step2}</div>
+            </div>
+            <div className="explanation-step">
+              <div className="step-number">3</div>
+              <div className="step-content">{explanation.step3}</div>
+            </div>
+            <div className="explanation-step">
+              <div className="step-number">4</div>
+              <div className="step-content">{explanation.step4}</div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Info Grid */}
       <div className="info-grid">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
+          transition={{ delay: 0.2 }}
           className="info-box"
         >
           <div className="info-title">
@@ -148,7 +182,7 @@ const ResultPanel = ({ result }) => {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.3 }}
           className="info-box"
         >
           <div className="info-title">
@@ -162,42 +196,14 @@ const ResultPanel = ({ result }) => {
           <div className="confidence-bar">
             <div 
               className="confidence-fill" 
-              style={{ width: `${mood_confidence}%` }}
+              style={{ width: `${moodConfidence}%` }}
             ></div>
           </div>
-          <div className="confidence-text">{mood_confidence}% confidence</div>
+          <div className="confidence-text">{moodConfidence}% confidence</div>
         </motion.div>
       </div>
 
-      {/* Sources Section */}
-      {sources && sources.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="info-box"
-        >
-          <div className="info-title">
-            <i className="fas fa-book"></i>
-            Reference Sources
-          </div>
-          <div className="sources-list">
-            {sources.map((source, index) => (
-              <a
-                key={index}
-                href={source.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="source-link"
-              >
-                {source.title || source.url}
-              </a>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Comic Section - UPDATED FOR 4 PANELS */}
+      {/* Comic Section - UPDATED FOR SINGLE IMAGE */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -208,6 +214,7 @@ const ResultPanel = ({ result }) => {
           <div className="info-title">
             <i className="fas fa-images"></i>
             Visual Fact-Strip
+            {style && <span className="style-badge">{style} style</span>}
           </div>
           <div className="comic-actions">
             <button className="feedback-btn">
@@ -220,18 +227,16 @@ const ResultPanel = ({ result }) => {
         </div>
         
         <div className="comic-container">
-          {panel_images && panel_images.length > 0 ? (
-            <div className="comic-strip">
-              {panel_images.map((image, index) => (
-                <div key={index} className="comic-panel">
-                  <img 
-                    src={image} 
-                    alt={`Comic Panel ${index + 1}`} 
-                    className="panel-image"
-                  />
-                  <div className="panel-number">Panel {index + 1}</div>
-                </div>
-              ))}
+          {comicImage ? (
+            <div className="comic-strip-single">
+              <img 
+                src={comicImage} 
+                alt="Fact-check comic strip" 
+                className="comic-image-single"
+              />
+              <div className="comic-caption">
+                AI-generated comic with scientific explanations in speech bubbles
+              </div>
             </div>
           ) : (
             <div className="comic-placeholder">
@@ -239,9 +244,6 @@ const ResultPanel = ({ result }) => {
               <p>Comic generation failed. Please try again.</p>
             </div>
           )}
-        </div>
-        <div className="comic-caption">
-          AI-generated comic panels with dialogue explaining the facts
         </div>
       </motion.div>
     </div>

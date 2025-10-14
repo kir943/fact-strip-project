@@ -24,7 +24,7 @@ const Home = () => {
   ];
 
   const stats = [
-    { value: "10K+", label: "Statements Verified" },
+    { value: "100+", label: "Statements Verified" },
     { value: "98%", label: "Accuracy Rate" },
     { value: "24/7", label: "Real-time Monitoring" },
     { value: "50+", label: "Trusted Sources" }

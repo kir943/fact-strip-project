@@ -1,5 +1,6 @@
 import openai
 import os
+import json
 
 class StoryProcessor:
     def __init__(self):
@@ -13,7 +14,7 @@ class StoryProcessor:
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": f"""You are a science educator creating comic dialogues. Create 4 specific, factual panels:
+                    {"role": "system", "content": f"""You arSe a science educator creating comic dialogues. Create 4 specific, factual panels:
 
 Statement: "{statement}"
 Verdict: {verdict} ({confidence}% confidence)
@@ -43,7 +44,6 @@ Example format: ["dialogue 1", "dialogue 2", "dialogue 3", "dialogue 4"]"""},
             print(f"✅ Generated dialogues: {result}")
             
             # Parse the JSON response
-            import json
             dialogues = json.loads(result)
             
             # Ensure we have exactly 4 panels
@@ -57,6 +57,53 @@ Example format: ["dialogue 1", "dialogue 2", "dialogue 3", "dialogue 4"]"""},
             print(f"❌ Dialogue generation failed: {e}")
             return self._create_fallback_panels(statement, verdict, confidence)
     
+    def generate_fact_explanation(self, fact):
+        """
+        Generates four sequential explanation steps for a given fact using OpenAI GPT
+        Returns: {step1, step2, step3, step4} or None if error
+        """
+        try:
+            print(f"🔬 Generating explanation for: {fact}")
+            
+            prompt = f"""
+You are a science educator creating content for a comic strip. Your task is to explain why a given fact is true or false in exactly four short, sequential, and easy-to-understand steps. Each step should be one sentence and fit inside a small speech bubble.
+
+Fact: "{fact}"
+
+Provide the explanation as a JSON object with four properties, labeled "step1" to "step4".
+
+Example for "Water is blue":
+{{
+  "step1": "Sunlight contains a full spectrum of colors.",
+  "step2": "Water molecules absorb the warmer red and yellow light wavelengths.",
+  "step3": "The cooler blue light is scattered back in all directions.",
+  "step4": "This scattered blue light is what our eyes perceive."
+}}
+
+Provide only the JSON response, no other text.
+"""
+            
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a helpful science educator that outputs only JSON."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7,
+                max_tokens=300
+            )
+            
+            # Extract the JSON response
+            content = response.choices[0].message.content.strip()
+            explanation_data = json.loads(content)
+            
+            print(f"✅ Generated explanation: {explanation_data}")
+            return explanation_data
+            
+        except Exception as e:
+            print(f"❌ Explanation generation failed: {e}")
+            return None
+    
     def _create_fallback_panels(self, statement, verdict, confidence):
         """Create better fallback panels"""
         return [
@@ -65,3 +112,6 @@ Example format: ["dialogue 1", "dialogue 2", "dialogue 3", "dialogue 4"]"""},
             f"Here's what the evidence shows us about this topic",
             f"VERDICT: {verdict.upper()}! {confidence}% confident based on scientific evidence"
         ]
+
+# Create global instance
+story_processor = StoryProcessor()
