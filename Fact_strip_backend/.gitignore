@@ -1,0 +1,80 @@
+# -----------------------
+# ✅ Environment & Secrets
+# -----------------------
+.env
+.env.*
+!.env.example  # keep example env for reference
+
+# -----------------------
+# 🐍 Python Files & Caches
+# -----------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# -----------------------
+# 🧪 Virtual Environments
+# -----------------------
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# -----------------------
+# 🧰 Flask Specific
+# -----------------------
+instance/
+*.db
+*.sqlite3
+*.sqlite
+
+# -----------------------
+# 🧱 Build & Dist Files
+# -----------------------
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+pip-wheel-metadata/
+
+# -----------------------
+# 🪵 Logs & Temp Files
+# -----------------------
+*.log
+*.tmp
+*.pid
+*.seed
+*.pid.lock
+tmp/
+temp/
+
+# -----------------------
+# 🧩 IDE & OS Files
+# -----------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.suo
+*.njsproj
+*.sln
+*.sw?
+
+# -----------------------
+# 🧪 Tests / Coverage
+# -----------------------
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
