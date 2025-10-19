@@ -21,7 +21,8 @@ REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
 
 # --- Initialize the Flask app ---
 app = Flask(__name__)
-CORS(app)  # Enable React connection
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+  # Enable React connection
 
 # --- Initialize API keys ---
 openai.api_key = OPENAI_API_KEY
