@@ -1,4 +1,3 @@
-// src/pages/FactCheck.jsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFactCheck } from '../hooks/useFactCheck';

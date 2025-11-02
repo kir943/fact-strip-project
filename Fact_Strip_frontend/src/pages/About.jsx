@@ -168,7 +168,7 @@ const About = () => {
             <div className="contact-info">
               <div className="contact-item">
                 <Globe className="w-5 h-5" />
-                <span>Email us at: contact@factstrip.com</span>
+                <span>Email us at: factstrip2025@gmail.com</span>
               </div>
               <div className="contact-item">
                 <Eye className="w-5 h-5" />

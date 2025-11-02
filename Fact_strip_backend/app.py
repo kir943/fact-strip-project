@@ -21,12 +21,22 @@ REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
 
 # --- Initialize the Flask app ---
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
-  # Enable React connection
+
+# ✅ FIXED: Simple CORS setup that actually works
+CORS(app)
 
 # --- Initialize API keys ---
 openai.api_key = OPENAI_API_KEY
 os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
+
+# ✅ ADDED: Explicit OPTIONS handlers for CORS preflight
+@app.route("/api/generate", methods=["OPTIONS"])
+def options_generate():
+    return "", 200
+
+@app.route("/api/generate-explanation", methods=["OPTIONS"])  
+def options_explanation():
+    return "", 200
 
 # --- Enhanced AI Analysis Functions ---
 def analyze_statement(statement):
@@ -125,10 +135,10 @@ def generate_comic(analysis_result, style, statement):
         
         print(f"🎨 Generating comic with scientific explanations...")
         
-        # 🆕 NEW: Generate scientific explanations for the speech bubbles
+        # Generate scientific explanations for the speech bubbles
         explanation = story_processor.generate_fact_explanation(statement)
         
-        # 🆕 Use the scientific explanations as dialogues
+        # Use the scientific explanations as dialogues
         if explanation:
             dialogues = [
                 explanation.get("step1", f"Let's examine: {statement}"),
@@ -212,14 +222,14 @@ def generate():
         print(f"🎭 Mood: {mood} ({mood_confidence}%)")
         print(f"🖼️  Using GPT-generated image prompts: {result['image_prompts']}")
 
-        # 🆕 NEW: Generate scientific explanation first
+        # Generate scientific explanation first
         explanation = story_processor.generate_fact_explanation(statement)
         print(f"🔬 Generated explanation: {explanation}")
 
         # Generate comic - USING GPT IMAGE PROMPTS AND SCIENTIFIC EXPLANATIONS
         comic_image = generate_comic(result, style, statement)
 
-        # Prepare response - 🆕 NOW INCLUDES EXPLANATION
+        # Prepare response - NOW INCLUDES EXPLANATION
         response_data = {
             "verdict": result["verdict"],
             "confidence": result["confidence"],
@@ -227,7 +237,7 @@ def generate():
             "mood": mood,
             "moodConfidence": mood_confidence,
             "comicImage": comic_image,
-            "explanation": explanation,  # 🆕 Add explanation to response
+            "explanation": explanation,  # Add explanation to response
             "success": True
         }
 

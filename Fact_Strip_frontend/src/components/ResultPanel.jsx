@@ -1,4 +1,3 @@
-// src/components/ResultPanel.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Share2, Download, ThumbsUp, ThumbsDown } from 'lucide-react';
@@ -8,10 +7,10 @@ const ResultPanel = ({ result }) => {
     verdict,
     confidence,
     mood,
-    moodConfidence, // Fixed: was mood_confidence
+    moodConfidence, 
     description,
-    comicImage, // CHANGED: Now using comicImage (single image) instead of panel_images
-    explanation, // NEW: Scientific explanations
+    comicImage, 
+    explanation, 
     style
   } = result;
 
@@ -55,7 +54,7 @@ const ResultPanel = ({ result }) => {
         console.log('Error sharing:', err);
       }
     } else {
-      // Fallback: copy to clipboard
+    
       navigator.clipboard.writeText(
         `Fact-Strip Analysis: "${result.statement}" - Verdict: ${verdict.toUpperCase()} - ${window.location.href}`
       );
@@ -64,7 +63,7 @@ const ResultPanel = ({ result }) => {
   };
 
   const handleDownload = () => {
-    // Download the comic image
+  
     if (comicImage) {
       const link = document.createElement('a');
       link.href = comicImage;
@@ -84,9 +83,21 @@ const ResultPanel = ({ result }) => {
       >
         <div className="verdict-header">
           <div className="verdict">
-            <div className="verdict-icon" style={{ backgroundColor: verdictConfig.color }}>
-              <i className={verdictConfig.icon}></i>
-            </div>
+           <motion.div
+  className={`verdict-icon ${
+    verdict === 'true'
+      ? 'verdict-true'
+      : verdict === 'false'
+      ? 'verdict-false'
+      : 'verdict-unverified'
+  }`}
+  initial={{ scale: 0 }}
+  animate={{ scale: 1 }}
+  transition={{ type: 'spring', stiffness: 100 }}
+>
+  <i className={verdictConfig.icon}></i>
+</motion.div>
+
             <div>
               <div className="verdict-text" style={{ color: verdictConfig.color }}>
                 {verdictConfig.text}

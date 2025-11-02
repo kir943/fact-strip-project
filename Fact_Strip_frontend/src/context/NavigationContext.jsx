@@ -11,9 +11,9 @@ export const useNavigation = () => {
 };
 
 export const NavigationProvider = ({ children }) => {
-  // Remove the custom routing state since we're using React Router
+ 
   const value = {
-    // You can keep other navigation-related state here if needed
+    
   };
 
   return (

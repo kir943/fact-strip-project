@@ -25,7 +25,6 @@ const History = () => {
     }
   };
 
-  // Add safety check for history
   if (!history || history.length === 0) {
     return (
       <div className="history-page">

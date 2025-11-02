@@ -1,10 +1,9 @@
-// src/hooks/useFactCheck.js
 import { useState } from 'react';
 import { useFact } from '../context/FactContext';
 import axios from 'axios';
 
-// ✅ Use localhost for testing (adjust if using deployed server)
-const API_BASE_URL = 'http://127.0.0.1:5000'; // or your server IP if not local
+// Fix: Remove any trailing slashes from the API base URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, '') || '';
 
 export const useFactCheck = () => {
   const [result, setResult] = useState(null);
@@ -18,29 +17,27 @@ export const useFactCheck = () => {
 
     try {
       console.log('🔹 Sending request to Flask backend...', { statement, style });
+      console.log('🔹 API Base URL:', API_BASE_URL); // Debug log
 
-      // ✅ axios POST to your Flask route
       const response = await axios.post(
-        `${API_BASE_URL}/api/generate`,
+        `${API_BASE_URL}/api/generate`, // This will now work correctly
         { statement, style },
         {
           headers: { 'Content-Type': 'application/json' },
-          timeout: 60000, // 60 seconds to avoid "Network Error" on large AI tasks
+          timeout: 60000,
         }
       );
 
       console.log('✅ Backend response:', response.data);
 
-      // ✅ UPDATED: Backend now returns single comic image
       const resultData = {
         id: Date.now(),
         timestamp: new Date().toISOString(),
         statement,
         style,
         ...response.data,
-        comicImage: response.data.comicImage || null, // Single comic image
-        // Remove panel_images since backend no longer returns it
-        moodConfidence: response.data.moodConfidence ?? response.data.mood_confidence ?? null, // Support both formats
+        comicImage: response.data.comicImage || null,
+        moodConfidence: response.data.moodConfidence ?? response.data.mood_confidence ?? null,
       };
 
       setResult(resultData);
@@ -49,9 +46,14 @@ export const useFactCheck = () => {
     } catch (err) {
       console.error('❌ API Error:', err);
       let errorMessage = 'Failed to process statement';
-      if (err.response) errorMessage = err.response.data?.error || 'Server Error';
-      else if (err.request) errorMessage = 'Network Error: Could not reach the backend';
-      else errorMessage = err.message;
+      
+      if (err.response) {
+        errorMessage = err.response.data?.error || 'Server Error';
+      } else if (err.request) {
+        errorMessage = 'Network Error: Could not reach the backend';
+      } else {
+        errorMessage = err.message;
+      }
 
       setError(errorMessage);
       throw new Error(errorMessage);

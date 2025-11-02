@@ -1,4 +1,4 @@
-// src/context/FactContext.jsx
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const FactContext = createContext();
@@ -30,7 +30,7 @@ export const FactProvider = ({ children }) => {
         updateAnalytics(parsedHistory);
       } catch (error) {
         console.error('Error parsing saved history:', error);
-        // Clear corrupted data
+    
         localStorage.removeItem('factStripHistory');
       }
     }
@@ -49,8 +49,6 @@ export const FactProvider = ({ children }) => {
     };
     setAnalytics(analytics);
   };
-
-  // Generate scientific explanations (for regeneration or standalone use)
   const generateExplanation = async (fact) => {
     try {
       const response = await fetch('http://localhost:5000/api/generate-explanation', {
@@ -68,14 +66,14 @@ export const FactProvider = ({ children }) => {
       const data = await response.json();
       
       if (data.success) {
-        return data.explanation; // This will be {step1, step2, step3, step4}
+        return data.explanation; 
       } else {
         throw new Error(data.error || 'Failed to generate explanation');
       }
     } catch (error) {
       console.error('Error generating explanation:', error);
       
-      // Return fallback explanation if API fails
+      
       return {
         step1: `Let's examine the statement: "${fact}"`,
         step2: 'Researching scientific evidence and sources...',
@@ -86,13 +84,12 @@ export const FactProvider = ({ children }) => {
   };
 
   const addToHistory = async (result) => {
-    // Use explanation from backend response (already generated in /api/generate)
-    // No need to make duplicate API call
+    
     const explanation = result.explanation;
 
     console.log('📦 Adding to history with explanation:', explanation);
 
-    // Create a clean history item with only necessary data
+    
     const historyItem = {
       id: result.id || Date.now(),
       timestamp: result.timestamp || new Date().toISOString(),
@@ -102,12 +99,12 @@ export const FactProvider = ({ children }) => {
       description: result.description,
       mood: result.mood,
       moodConfidence: result.moodConfidence,
-      comicImage: result.comicImage, // Single comic image
+      comicImage: result.comicImage, 
       style: result.style,
-      explanation: explanation // Use the explanation from backend
+      explanation: explanation 
     };
 
-    const newHistory = [historyItem, ...history.slice(0, 49)]; // Keep last 50 items
+    const newHistory = [historyItem, ...history.slice(0, 49)]; 
     setHistory(newHistory);
     
     try {
@@ -130,7 +127,7 @@ export const FactProvider = ({ children }) => {
     }
   };
 
-  // Function to regenerate explanation for a specific fact
+  
   const regenerateExplanation = async (factId) => {
     const historyItem = history.find(item => item.id === factId);
     if (!historyItem) return null;
@@ -161,12 +158,12 @@ export const FactProvider = ({ children }) => {
     }
   };
 
-  // Get a specific history item by ID
+
   const getHistoryItem = (factId) => {
     return history.find(item => item.id === factId);
   };
 
-  // Remove a specific item from history
+ 
   const removeFromHistory = (factId) => {
     const updatedHistory = history.filter(item => item.id !== factId);
     setHistory(updatedHistory);
@@ -187,10 +184,10 @@ export const FactProvider = ({ children }) => {
     clearHistory,
     loading,
     setLoading,
-    generateExplanation, // Export for direct use
-    regenerateExplanation, // Export for regenerating explanations
-    getHistoryItem, // Export for getting specific items
-    removeFromHistory // Export for removing items
+    generateExplanation, 
+    regenerateExplanation, 
+    getHistoryItem, 
+    removeFromHistory 
   };
 
   return (
