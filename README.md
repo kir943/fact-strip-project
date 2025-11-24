@@ -1,4 +1,4 @@
-# 📰 Fact-Strip: AI-Powered Visual Fact Verification
+# Fact-Strip: AI-Powered Visual Fact Verification
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-18.2-61DAFB?style=for-the-badge)
@@ -12,25 +12,25 @@ Developed as part of the **MumbaiHacks GenAI Hackathon**, it demonstrates the po
 
 ---
 
-## 🚀 Overview
+## Overview
 
 Fact-Strip leverages **AI models** to transform plain factual claims into an interactive visual explanation.
 It performs fact verification, mood detection, and generates a comic-style illustration — all in one seamless flow.
 
 ---
 
-## ✨ Core Features
+## Core Features
 
-* ✅ **Fact Verification** – Validates the truthfulness of a statement using AI-based NLP models.
-* 🧠 **Sentiment & Mood Analysis** – Detects the emotional tone of the input text.
-* 🎨 **AI Comic Generation** – Converts verified facts into visual comic strips via the Replicate API.
-* 📊 **Confidence Scoring** – Displays AI confidence levels for transparency and reliability.
-* 📚 **Fact History** – Maintains a log of previous verifications for quick access.
-* 💡 **Responsive Frontend** – Built with React and TailwindCSS for an optimized user experience.
+* **Fact Verification** – Validates the truthfulness of a statement using AI-based NLP models.
+* **Sentiment & Mood Analysis** – Detects the emotional tone of the input text.
+* **AI Comic Generation** – Converts verified facts into visual comic strips via the Replicate API.
+* **Confidence Scoring** – Displays AI confidence levels for transparency and reliability.
+* **Fact History** – Maintains a log of previous verifications for quick access.
+* **Responsive Frontend** – Built with React and TailwindCSS for an optimized user experience.
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 ### **Frontend**
 
@@ -48,7 +48,7 @@ It performs fact verification, mood detection, and generates a comic-style illus
 
 ---
 
-## ⚙️ Architecture Overview
+## Architecture Overview
 
 ```text
 User Statement → React Frontend → Flask Backend → OpenAI API (Fact + Sentiment Analysis)
@@ -65,7 +65,7 @@ User Statement → React Frontend → Flask Backend → OpenAI API (Fact + Senti
 
 ---
 
-## 🧩 Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 
@@ -112,7 +112,7 @@ python app.py
 
 ---
 
-## 🧠 Learning Outcomes
+## Learning Outcomes
 
 ### Technical
 
@@ -130,17 +130,17 @@ python app.py
 
 ---
 
-## 📈 Future Enhancements
+## Future Enhancements
 
-* 🔍 Integration with third-party fact-checking databases (e.g., Snopes, PolitiFact)
-* 🌍 Multi-language support for global accessibility
-* 🔒 User authentication and personalized dashboards
-* 📤 Option to download generated comics
-* 📊 Analytics dashboard for fact trends
+* Integration with third-party fact-checking databases (e.g., Snopes, PolitiFact)
+* Multi-language support for global accessibility
+* User authentication and personalized dashboards
+* Option to download generated comics
+* Analytics dashboard for fact trends
 
 ---
 
-## 🤝 Contribution
+## Contribution
 
 Contributions and suggestions are welcome!
 
@@ -154,7 +154,7 @@ Contributions and suggestions are welcome!
 
 ---
 
-## 🧩 Credits
+## Credits
 
 * **OpenAI** – for natural language analysis
 * **Replicate** – for AI-based comic generation
@@ -162,7 +162,3 @@ Contributions and suggestions are welcome!
 * **MumbaiHacks GenAI Hackathon** – for inspiring this project
 
 ---
-
-## 📜 License
-
-This project is licensed under the **MIT License**.
